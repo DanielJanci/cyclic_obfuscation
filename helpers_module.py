@@ -83,4 +83,9 @@ def swap_dict(d: dict) -> dict:
     return {v: k for k, v in d.items()}
 
 
-
+def get_success_rate(correct_key: list[bool], estimated_key: list[bool]) -> float:
+    success = 0
+    for i, j in enumerate(estimated_key):
+        if j == correct_key[i]:
+            success += 1
+    return success / len(correct_key) * 100

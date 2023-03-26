@@ -1,7 +1,7 @@
 from pysat.solvers import Solver
 from copy import deepcopy
 from collections import OrderedDict
-from helpers_module import swap_dict, neg_lit
+from helpers_module import swap_dict, neg_lit, get_success_rate
 from circuit import Circuit
 
 
@@ -137,7 +137,8 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
     :param details: print details of attack
     :return: iterations, estimated key
     """
-    print(f'Performing SAT attack on {c1.file_name} ...')
+    if details:
+        print(f'Performing SAT attack on {c1.file_name} ...')
     c1.simplify_gates()
     last_lit_key = list(c1.literals)[-1]
     c2 = copy_circuit_for_init(c1)
@@ -169,14 +170,11 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
     is_sat, model = solve_cnf(cnf_i, solver_name)
     assign = model_to_result(c1, model)
     estimated_key = [v for k, v in assign.items() if k in c1.key_gates]
-    success = 0
-    for j, k in enumerate(estimated_key):
-        if k == c1.correct_key[j]:
-            success += 1
+    success = get_success_rate(c1.correct_key, estimated_key)
     if details:
         print(f'    iterations: {i}')
         print(f'    estimated key: {"".join([str(int(b)) for b in estimated_key])}')
         print(f'    correct key:   {"".join([str(int(b)) for b in c1.correct_key])}')
-        print(f'    success rate: {success}/{len(c1.correct_key)} = {success / len(c1.correct_key) * 100:2}%')
+        print(f'    success rate: {success}%')
         print()
     return i, estimated_key
