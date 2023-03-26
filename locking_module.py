@@ -52,8 +52,8 @@ def find_routes(c: Circuit, graph: dict, max_len: int, max_routes: int) -> list[
                 if len(list(set(p) & set(used))) == 0:  # if there isnt an intersection of path "p" and nodes "used"
                     routes.append(p)
                     used.extend(p)
-        if len(routes) == max_routes:
-            break
+                    if len(routes) == max_routes:
+                        return routes
     return routes
 
 
