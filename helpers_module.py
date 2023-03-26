@@ -84,6 +84,12 @@ def swap_dict(d: dict) -> dict:
 
 
 def get_success_rate(correct_key: list[bool], estimated_key: list[bool]) -> float:
+    """
+    Returns percentage of in how many bits are keys equivalent.
+    :param correct_key: correct key to ciruit
+    :param estimated_key: key estimated by SAT solver
+    :return: percentage
+    """
     success = 0
     for i, j in enumerate(estimated_key):
         if j == correct_key[i]:
