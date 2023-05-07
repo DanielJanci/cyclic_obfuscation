@@ -117,14 +117,15 @@ def available_gates(c: Circuit, routes: list[list[str]]) -> list[str]:
 
 def lock_route(c: Circuit, graph: dict, route: list[str], key: list[bool], r_counter: int, avail_g: list[str]) -> None:
     """
-        Inserts mux key gates to Circuit in a way so it creates a cycle from nodes in route (last node of route is
-        connected to the 1st node).
-        :param c: Circuit
-        :param graph: graph representation of Circuit
-        :param route: list of gates creating a cycle
-        :param key: key
-        :param r_counter: counter
-        :return: None
+    Inserts mux key gates to Circuit in a way so it creates a cycle from nodes in route (last node of route is
+    connected to the 1st node).
+    :param avail_g: gates thats can be connected with mux gates
+    :param c: Circuit
+    :param graph: graph representation of Circuit
+    :param route: list of gates creating a cycle
+    :param key: key
+    :param r_counter: counter
+    :return: None
     """
     for i, next_g in enumerate(route):
         mux_name = f'm{r_counter + i}'
@@ -141,13 +142,13 @@ def lock_route(c: Circuit, graph: dict, route: list[str], key: list[bool], r_cou
             prev_g2 = choice(avail_g)
             add_mux_gate(c, mux_name, next_g, prev_g1, prev_g2, key_g, key[r_counter + i], pos)
 
-            if len(graph[route[i - 1]]) == 1:
-                new_next_g = choice(avail_g)
-                new_pos = list(c.gates.keys()).index(new_next_g)
-                prev_g1 = c.gates[new_next_g].inputs[0]
-                prev_g2 = route[i - 1]
-                mux_name = f'mm{r_counter + i}'
-                add_mux_gate(c, mux_name, new_next_g, prev_g1, prev_g2, key_g, key[r_counter + i], new_pos)
+        if len(graph[prev_g1]) == 1:
+            new_next_g = choice(avail_g)
+            new_pos = list(c.gates.keys()).index(new_next_g)
+            prev_g2 = prev_g1
+            prev_g1 = c.gates[new_next_g].inputs[0]
+            mux_name = f'mm{r_counter + i}'
+            add_mux_gate(c, mux_name, new_next_g, prev_g1, prev_g2, key_g, key[r_counter + i], new_pos)
 
 
 def lock_circuit(c: Circuit, max_len: int, max_num: int, key: list[bool]) -> Circuit:
@@ -171,67 +172,6 @@ def lock_circuit(c: Circuit, max_len: int, max_num: int, key: list[bool]) -> Cir
     return c_l
 
 
-# def add_dummy_logic(c: Circuit, dummy_name1: str, dummy_name2: str, pos: int) -> None:
-#     """
-#     Adds 2 dummy gates to Circuit and connects them with 3 random input gates.
-#     :param c: Circuit
-#     :param dummy_name1: 1st dummy gate name
-#     :param dummy_name2: 2nd dummy gate name
-#     :param pos: position where to insert dummy gates in Circuit
-#     :return: None
-#     """
-#     dg_a = Gate('or', dummy_name1, [choice(c.input_gates), choice(c.input_gates)])
-#     dg_b = Gate('nand', dummy_name2, [dg_a.name, choice(c.input_gates)])
-#     c.dummy_gates.append(dg_a.name)
-#     c.dummy_gates.append(dg_b.name)
-#     items = list(c.gates.items())
-#     items.insert(pos, (dg_b.name, dg_b))
-#     items.insert(pos, (dg_a.name, dg_a))
-#     c.gates = OrderedDict(items)
-#
-#
-# def lock_route(c: Circuit, graph: dict, route: list[str], key: list[bool], r_counter: int) -> None:
-#     """
-#     Inserts mux key gates and dummy gates to Circuit in a way so it creates a cycle from nodes in route (last node of
-#     route is connected to the 1st node).
-#     :param c: Circuit
-#     :param graph: graph representation of Circuit
-#     :param route: route
-#     :param key: key
-#     :param r_counter: counter
-#     :return: None
-#     """
-#     for i, gate_name in enumerate(route):
-#         mux_name = f'm{r_counter + i}'
-#         key_g = f'k{r_counter + i}'
-#         next_g = gate_name
-#         pos = list(c.gates.keys()).index(next_g)
-#         if i == 0:
-#             prev_g1 = c.gates[next_g].inputs[0]
-#             prev_g2 = route[-1]
-#             add_mux_gate(c, mux_name, next_g, prev_g1, prev_g2, key_g, key[r_counter + i], pos)
-#         else:
-#             dummy_name1 = f'd{r_counter + i}_a'
-#             dummy_name2 = f'd{r_counter + i}_b'
-#             add_dummy_logic(c, dummy_name1, dummy_name2, pos)
-#             prev_g1 = route[i - 1]
-#             prev_g2 = dummy_name1
-#             pos = list(c.gates.keys()).index(next_g)
-#             add_mux_gate(c, mux_name, next_g, prev_g1, prev_g2, key_g, key[r_counter + i], pos)
-#
-#             if len(graph[route[i - 1]]) == 1:
-#                 mux_name = f'md{r_counter + i}'
-#                 dummy_name1 = f'dd{r_counter + i}_a'
-#                 dummy_name2 = f'dd{r_counter + i}_b'
-#                 pos = list(c.gates.keys()).index(next_g)
-#                 add_dummy_logic(c, dummy_name1, dummy_name2, pos)
-#                 next_g = dummy_name2
-#                 prev_g1 = route[i - 1]
-#                 prev_g2 = dummy_name1
-#                 pos = list(c.gates.keys()).index(dummy_name2)
-#                 add_mux_gate(c, mux_name, next_g, prev_g2, prev_g1, key_g, key[r_counter + i], pos)
-#
-#
 # def explore_circuit_util(c: Circuit, graph: dict, u: str, visited: list[str], curr_path: list[str],
 #                          paths: list[list[str]]) -> None:
 #     visited.append(u)
