@@ -37,18 +37,6 @@ def model_to_result(c: Circuit, model: list[int]) -> dict:
     return res
 
 
-def eval_circuit(c: Circuit, inputs: list[bool]) -> list[bool]:
-    """
-    Unlocks and simulates working circuit.
-    :param c: Circuit
-    :param inputs: inputs to circuit
-    :return: circuits output
-    """
-    c.unlock()
-    c_sim = c.simulate(inputs)
-    return c_sim
-
-
 def diff_out_cnf(lits1: dict, lits2: dict, counter: int) -> list[list[int]]:
     """
     Returns cnf for [Y1 != Y2].
@@ -150,7 +138,7 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
     while is_sat and i < limit:
         assign1 = model_to_result(c1, model)
         dip_x = [v for k, v in assign1.items() if k in c1.input_gates]
-        dip_y = eval_circuit(oracle, dip_x)
+        dip_y = oracle.simulate(dip_x)
 
         c1_copy = copy_circuit_for_dip(c1, counter)
         counter = c1_copy.literals[last_lit_key]
@@ -175,6 +163,6 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
         print(f'    iterations: {i}')
         print(f'    estimated key: {"".join([str(int(b)) for b in estimated_key])}')
         print(f'    correct key:   {"".join([str(int(b)) for b in c1.correct_key])}')
-        print(f'    success rate: {success}%')
+        print(f'    success rate: {round(success, 3)}%')
         print()
     return i, estimated_key
