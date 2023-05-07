@@ -150,7 +150,7 @@ def lock_route(c: Circuit, graph: dict, route: list[str], key: list[bool], r_cou
                 add_mux_gate(c, mux_name, new_next_g, prev_g1, prev_g2, key_g, key[r_counter + i], new_pos)
 
 
-def lock_circuit(c: Circuit, max_len: int, max_num: int, key: list[bool]) -> None:
+def lock_circuit(c: Circuit, max_len: int, max_num: int, key: list[bool]) -> Circuit:
     """
     Finds routes in Circuit and locks them.
     :param c: Circuit
@@ -159,14 +159,16 @@ def lock_circuit(c: Circuit, max_len: int, max_num: int, key: list[bool]) -> Non
     :param key: key
     :return: None
     """
-    add_key(c, key)
-    g = c.to_graph()
-    routes = find_routes(c, g, max_len, max_num)
+    c_l = deepcopy(c)
+    add_key(c_l, key)
+    g = c_l.to_graph()
+    routes = find_routes(c_l, g, max_len, max_num)
     r_counter = 0
-    avail_g = available_gates(c, routes)
+    avail_g = available_gates(c_l, routes)
     for r in routes:
-        lock_route(c, g, r, key, r_counter, avail_g)
+        lock_route(c_l, g, r, key, r_counter, avail_g)
         r_counter += len(r)
+    return c_l
 
 
 # def add_dummy_logic(c: Circuit, dummy_name1: str, dummy_name2: str, pos: int) -> None:
