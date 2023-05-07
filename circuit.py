@@ -4,7 +4,20 @@ from logic_module import general_op
 
 
 class Gate:
+    """
+    A class that represents gate in a circuit.
+    operation -> a type of operation the gate holds
+    inputs -> names of gates of inputs
+    name -> name of the gate
+    value -> current value the gate has
+    """
     def __init__(self, operation: str, name: str, inputs: list[str]):
+        """
+        Creates a gate.
+        :param operation: a type of operation the gate holds
+        :param name: name of the gate
+        :param inputs: names of gates of inputs
+        """
         self.operation = operation
         self.inputs = inputs
         self.name = name
@@ -12,7 +25,23 @@ class Gate:
 
 
 class Circuit:
+    """
+    A class that represents ciruit.
+    file_name -> name of the file from which the ciruit is loaded
+    input_gates -> list of names of input gates
+    output_gates -> list of names of output gates
+    key_gates -> list of names of key gates
+    literals -> literals representing each gate in cnf
+    gates -> all of the gates stored in gict (key = name fo the gate, value = Gate instance)
+    is_locked -> bool value thats tells if the circuit is locked
+    correct_key -> correct key loaded from the file (if the ciruit is locked)
+    """
     def __init__(self, bench_file):
+        """
+        Creates a circuit from file. When loading a locked ciruit, key inputs must contain letter k in the file and any
+        other gates must not.
+        :param bench_file: name of the file
+        """
         self.file_name = bench_file
         self.input_gates = []
         self.output_gates = []
@@ -53,7 +82,11 @@ class Circuit:
         if len(self.key_gates) > 0:
             self.is_locked = True
 
-    def simplify_gates(self):
+    def simplify_gates(self) -> None:
+        """
+        Simplifies gates so that each one has at most 2 inputs.
+        :return: None
+        """
         new_gates = dict()
         cnt = 0
         for name in self.gates:
@@ -96,6 +129,10 @@ class Circuit:
             self.literals[name] = i + 1
 
     def to_cnf(self) -> list[list[int]]:
+        """
+        Creates cnf formula representing circuit.
+        :return: cnf formula
+        """
         cnf = []
         for name in self.gates:
             if self.gates[name].operation != 'input':
@@ -111,6 +148,10 @@ class Circuit:
         return cnf
 
     def to_graph(self) -> dict:
+        """
+        Returns graph representation of circuit.
+        :return: graph as a dict
+        """
         graph = defaultdict(list)
         for g in self.gates:
             if self.gates[g].operation != 'input':
@@ -119,12 +160,21 @@ class Circuit:
         return graph
 
     def unlock(self) -> None:
+        """
+        Inserts key values to key gates in ciruit.
+        :return: None
+        """
         if self.is_locked:
             for i, k in enumerate(self.key_gates):
                 self.gates[k].value = self.correct_key[i]
             self.is_locked = False
 
     def simulate(self, inputs: list[bool]) -> list[bool]:
+        """
+        Inserts input values to input gates, evaluates ciruits output, which is then returned.
+        :param inputs: input values
+        :return: circuits output
+        """
         if not self.is_locked:
             for i, name in enumerate(self.input_gates):
                 self.gates[name].value = inputs[i]
@@ -134,12 +184,11 @@ class Circuit:
                 self.gates[name].value = general_op(self.gates[name].operation, inputs)
         return [self.gates[name].value for name in self.output_gates]
 
-    def reset_values(self) -> None:
-        for name in self.gates:
-            self.gates[name].value = None
-        self.is_locked = True
-
     def key_literals(self) -> dict:
+        """
+        Returns dict of key literals.
+        :return: dict of key literals
+        """
         key_lit = dict()
         for g in self.literals:
             if 'k' in g:
@@ -147,6 +196,10 @@ class Circuit:
         return key_lit
 
     def input_literals(self) -> dict:
+        """
+        Returns dict of input literals.
+        :return: dict of input literals
+        """
         input_lit = dict()
         for g in self.literals:
             if g in self.input_gates:
@@ -154,6 +207,10 @@ class Circuit:
         return input_lit
 
     def output_literals(self) -> dict:
+        """
+        Returns dict of output literals.
+        :return: dict of output literals
+        """
         output_lit = dict()
         for g in self.literals:
             if g in self.output_gates:
@@ -161,6 +218,11 @@ class Circuit:
         return output_lit
 
     def to_file(self, file_name: str) -> None:
+        """
+        Writes ciruit to a file.
+        :param file_name: name of the file
+        :return: None
+        """
         with open(file_name, 'w') as f:
             f.write(f'#{"".join(str(int(i)) for i in self.correct_key)}\n')
             for in_g in self.input_gates:
