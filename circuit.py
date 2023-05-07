@@ -1,5 +1,4 @@
 from collections import defaultdict, OrderedDict
-from helpers_module import tseytin
 from logic_module import general_op
 
 
@@ -127,25 +126,6 @@ class Circuit:
         self.gates = new_gates
         for i, name in enumerate(self.gates):
             self.literals[name] = i + 1
-
-    def to_cnf(self) -> list[list[int]]:
-        """
-        Creates cnf formula representing circuit.
-        :return: cnf formula
-        """
-        cnf = []
-        for name in self.gates:
-            if self.gates[name].operation != 'input':
-                if len(self.gates[name].inputs) == 1:
-                    cnf.extend(tseytin(self.gates[name].operation,
-                                       self.literals[name],
-                                       self.literals[self.gates[name].inputs[0]]))
-                else:
-                    cnf.extend(tseytin(self.gates[name].operation,
-                                       self.literals[name],
-                                       self.literals[self.gates[name].inputs[0]],
-                                       self.literals[self.gates[name].inputs[1]]))
-        return cnf
 
     def to_graph(self) -> dict:
         """

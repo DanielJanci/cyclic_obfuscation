@@ -1,8 +1,85 @@
 from pysat.solvers import Solver
 from copy import deepcopy
 from collections import OrderedDict
-from helpers_module import swap_dict, neg_lit, get_success_rate
+from helpers_module import swap_dict, get_success_rate
 from circuit import Circuit
+
+
+def neg_lit(lit: int) -> int:
+    """
+    Returns a negation of literal.
+    :param lit: literal
+    :return: negation of literal
+    """
+    return lit * (-1)
+
+
+def tseytin(operand: str, output: int, input_a: int, input_b=None) -> list[list[int]]:
+    """
+    Returns a cnf representation of a gate.
+    :param operand: gate operation
+    :param output: name of output gate
+    :param input_a: name of 1st input gate
+    :param input_b: name of 2nd input gate
+    :return: list of clausles (cnf)
+    """
+    cnf = []
+    if operand == 'and':
+        cnf.append([neg_lit(input_a), neg_lit(input_b), output])
+        cnf.append([input_a, neg_lit(output)])
+        cnf.append([input_b, neg_lit(output)])
+    elif operand == 'nand':
+        cnf.append([neg_lit(input_a), neg_lit(input_b), neg_lit(output)])
+        cnf.append([input_a, output])
+        cnf.append([input_b, output])
+    elif operand == 'or':
+        cnf.append([input_a, input_b, neg_lit(output)])
+        cnf.append([neg_lit(input_a), output])
+        cnf.append([neg_lit(input_b), output])
+    elif operand == 'nor':
+        cnf.append([input_a, input_b, output])
+        cnf.append([neg_lit(input_a), neg_lit(output)])
+        cnf.append([neg_lit(input_b), neg_lit(output)])
+    elif operand == 'not':
+        cnf.append([neg_lit(input_a), neg_lit(output)])
+        cnf.append([input_a, output])
+    elif operand == 'buf':
+        cnf.append([neg_lit(input_a), output])
+        cnf.append([input_a, neg_lit(output)])
+    elif operand == 'xor':
+        cnf.append([neg_lit(input_a), neg_lit(input_b), neg_lit(output)])
+        cnf.append([input_a, input_b, neg_lit(output)])
+        cnf.append([input_a, neg_lit(input_b), output])
+        cnf.append([neg_lit(input_a), input_b, output])
+    elif operand == 'xnor':
+        cnf.append([neg_lit(input_a), neg_lit(input_b), output])
+        cnf.append([input_a, input_b, output])
+        cnf.append([input_a, neg_lit(input_b), neg_lit(output)])
+        cnf.append([neg_lit(input_a), input_b, neg_lit(output)])
+    else:
+        print(f'Gate {operand} has no cnf conversion.')
+    return cnf
+
+
+def circuit_to_cnf(c: Circuit) -> list[list[int]]:
+    """
+    Creates cnf formula representing circuit.
+    :param c: Circuit
+    :return: cnf formula representing circuit
+    """
+    cnf = []
+    for name in c.gates:
+        if c.gates[name].operation != 'input':
+            if len(c.gates[name].inputs) == 1:
+                cnf.extend(tseytin(c.gates[name].operation,
+                                   c.literals[name],
+                                   c.literals[c.gates[name].inputs[0]]))
+            else:
+                cnf.extend(tseytin(c.gates[name].operation,
+                                   c.literals[name],
+                                   c.literals[c.gates[name].inputs[0]],
+                                   c.literals[c.gates[name].inputs[1]]))
+    return cnf
 
 
 def solve_cnf(cnf: list[list[int]], solver_name='m22') -> (bool, list[int]):
@@ -131,7 +208,7 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
     last_lit_key = list(c1.literals)[-1]
     c2 = copy_circuit_for_init(c1)
     counter = c2.literals[last_lit_key]
-    cnf_i = c1.to_cnf() + c2.to_cnf()
+    cnf_i = circuit_to_cnf(c1) + circuit_to_cnf(c2)
     diff_out = diff_out_cnf(c1.output_literals(), c2.output_literals(), counter)
     is_sat, model = solve_cnf(cnf_i + diff_out, solver_name)
     i = 1
@@ -145,8 +222,8 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
         c2_copy = copy_circuit_for_dip(c2, counter)
         counter = c2_copy.literals[last_lit_key]
 
-        cnf1 = c1_copy.to_cnf()
-        cnf2 = c2_copy.to_cnf()
+        cnf1 = circuit_to_cnf(c1_copy)
+        cnf2 = circuit_to_cnf(c2_copy)
         dip1 = dip_cnf(c1_copy, dip_x, dip_y)
         dip2 = dip_cnf(c2_copy, dip_x, dip_y)
         cnf_i += (cnf1 + cnf2 + dip1 + dip2)
