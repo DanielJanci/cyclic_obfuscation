@@ -17,7 +17,6 @@ class Circuit:
         self.input_gates = []
         self.output_gates = []
         self.key_gates = []
-        self.dummy_gates = []
         self.literals = OrderedDict()
         self.gates = OrderedDict()
         self.is_locked = False
