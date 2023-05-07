@@ -70,6 +70,12 @@ def multi_xnor(a: list[bool]) -> bool:
 
 
 def general_op(operation: str, inputs: list[bool]) -> bool:
+    """
+    Returns result values of boolean operation.
+    :param operation: type of operation
+    :param inputs: input values
+    :return: result values of opereation
+    """
     if operation == 'buf':
         return inputs[0]
     elif operation == 'not':
@@ -88,26 +94,3 @@ def general_op(operation: str, inputs: list[bool]) -> bool:
         return multi_xnor(inputs)
     elif operation == 'mux':
         return mux_op(inputs[0], inputs[1], inputs[2])
-
-
-# def general_op(op: str, a: int, b=None, s=None) -> int:
-#     if op == 'not':
-#         return not_op(a)
-#     elif op == 'buf':
-#         return a
-#     elif op == 'input':
-#         return a
-#     elif op == 'or':
-#         return or_op(a, b)
-#     elif op == 'nor':
-#         return nor_op(a, b)
-#     elif op == 'and':
-#         return and_op(a, b)
-#     elif op == 'nand':
-#         return nand_op(a, b)
-#     elif op == 'xor':
-#         return xor_op(a, b)
-#     elif op == 'xnor':
-#         return xnor_op(a, b)
-#     elif op == 'mux':
-#         return mux_op(a, b, s)
