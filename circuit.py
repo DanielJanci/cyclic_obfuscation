@@ -139,25 +139,14 @@ class Circuit:
                     graph[i].append(g)
         return graph
 
-    def unlock(self) -> None:
-        """
-        Inserts key values to key gates in ciruit.
-        :return: None
-        """
-        if self.is_locked:
-            for i, k in enumerate(self.key_gates):
-                self.gates[k].value = self.correct_key[i]
-            self.is_locked = False
-
     def simulate(self, inputs: list[bool]) -> list[bool]:
         """
         Inserts input values to input gates, evaluates ciruits output, which is then returned.
         :param inputs: input values
         :return: circuits output
         """
-        if not self.is_locked:
-            for i, name in enumerate(self.input_gates):
-                self.gates[name].value = inputs[i]
+        for i, name in enumerate(self.input_gates):
+            self.gates[name].value = inputs[i]
         for name in self.gates:
             if self.gates[name].operation != 'input':
                 inputs = [self.gates[name2].value for name2 in self.gates[name].inputs]
