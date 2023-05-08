@@ -50,7 +50,12 @@ class Circuit:
         self.correct_key = []
         self.load_from_file(bench_file)
 
-    def load_from_file(self, bench_file: str):
+    def load_from_file(self, bench_file: str) -> None:
+        """
+        A simple parser for loading circuit from a file.
+        :param bench_file: name of the file
+        :return: None
+        """
         with open(bench_file, 'r') as bf:
             for line in bf:
                 line = line.strip().lower()
