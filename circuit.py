@@ -35,7 +35,7 @@ class Circuit:
     is_locked -> bool value thats tells if the circuit is locked
     correct_key -> correct key loaded from the file (if the ciruit is locked)
     """
-    def __init__(self, bench_file):
+    def __init__(self, bench_file: str):
         """
         Creates a circuit from file. When loading a locked ciruit, key inputs must contain letter k in the file and any
         other gates must not.
@@ -47,9 +47,10 @@ class Circuit:
         self.key_gates = []
         self.literals = OrderedDict()
         self.gates = OrderedDict()
-        self.is_locked = False
         self.correct_key = []
+        self.load_from_file(bench_file)
 
+    def load_from_file(self, bench_file: str):
         with open(bench_file, 'r') as bf:
             for line in bf:
                 line = line.strip().lower()
@@ -78,8 +79,6 @@ class Circuit:
                     else:
                         if '#0' in line or '#1' in line:
                             self.correct_key = [bool(int(i)) for i in line[1:]]
-        if len(self.key_gates) > 0:
-            self.is_locked = True
 
     def simplify_gates(self) -> None:
         """
