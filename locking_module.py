@@ -65,7 +65,6 @@ def add_key(c: Circuit, key: list[bool]) -> None:
     :return: None
     """
     c.correct_key = key
-    c.is_locked = True
     pos = len(c.input_gates)
     items = list(c.gates.items())
     for i in range(len(key)):
@@ -163,7 +162,14 @@ def lock_circuit(c: Circuit, max_len: int, max_num: int, key: list[bool]) -> Cir
     c_l = deepcopy(c)
     add_key(c_l, key)
     g = c_l.to_graph()
+
     routes = find_routes(c_l, g, max_len, max_num)
+    attempts = 100
+    while len(routes) < max_num and attempts > 0:
+        print(f"Couldn't find {max_num} routes of length {max_len}, Trying again... Remaining attempts: {attempts}")
+        routes = find_routes(c_l, g, max_len, max_num)
+        attempts -= 1
+
     r_counter = 0
     avail_g = available_gates(c_l, routes)
     for r in routes:
