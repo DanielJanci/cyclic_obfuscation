@@ -4,6 +4,9 @@ This is a simple Python project that offers the ability to lock a logic circuit
 and perform a SAT attack via functions implemented in various Python modules. The
 main functionality which each module offers are stated below.
 
+## Requirements 
+- Python version 3.10
+- Installed Python library PySAT: https://pysathq.github.io/
 
 ## Module circuit.py: 
 Contains classes for representation of logic circuit and methonds that can load 
