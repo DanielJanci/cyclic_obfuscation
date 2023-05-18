@@ -214,7 +214,7 @@ def copy_circuit_for_dip(c: Circuit, counter: int) -> Circuit:
     return c_copy
 
 
-def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, details=True) -> (bool, list[bool]):
+def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, details=True) -> (int, list[bool]):
     """
     Performs a classic SAT attack on locked circuit.
     :param c1: locked Circuit
