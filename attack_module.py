@@ -15,7 +15,7 @@ def swap_dict(d: dict) -> dict:
 
 def get_success_rate(correct_key: list[bool], estimated_key: list[bool]) -> float:
     """
-    Returns percentage of in how many bits are keys equivalent.
+    Returns percentage of how many bits of keys equivalent.
     :param correct_key: correct key to ciruit
     :param estimated_key: key estimated by SAT solver
     :return: percentage
@@ -214,7 +214,7 @@ def copy_circuit_for_dip(c: Circuit, counter: int) -> Circuit:
     return c_copy
 
 
-def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, details=True):
+def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, details=True) -> (bool, list[bool]):
     """
     Performs a classic SAT attack on locked circuit.
     :param c1: locked Circuit
