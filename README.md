@@ -12,7 +12,7 @@ main functionality which each module offers are stated below.
 Contains classes for representation of logic circuit and methonds that can load 
 a logic ciruit from file and simulate its functionality.
 
-## Class : Circuit
+### Class : Circuit
 Class that represents logic circuit.
 Main methods:
 
@@ -106,7 +106,7 @@ i, est_key = sat_attack(cl, c)
 s = get_success_rate(key, est_key)
 ```
 
-### Slovesnky
+### Slovensky
 # Jednoduchá Python implementácia cyclickej obfuskácie logických obvodov 
 Tento jednoduchý Python projekt ponúka možnosť uzamknutia logických obvodov pomocou cyklickej obfuskácie a možnosť
 využitia SAT útoku na uzamknutý obvod. Projekt sa skladá z niekolkých modulov, ktorých hlavná funkcionalita je popísaná
@@ -119,7 +119,7 @@ nižšie.
 ## Modul circuit.py: 
 Obsahuje triedy a metódy určené na načitanie obvodu zo súboru a simuláciu funkcionality tohto obvodu.
 
-## Trieda : Circuit
+### Trieda : Circuit
 Trieda, ktorá reprezentuje logický obvod.
 Hlavné metódy:
 
