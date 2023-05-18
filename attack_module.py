@@ -257,8 +257,9 @@ def sat_attack(c1: Circuit, oracle: Circuit, solver_name='m22', limit=100, detai
     is_sat, model = solve_cnf(cnf_i, solver_name)
     assign = model_to_result(c1, model)
     estimated_key = [v for k, v in assign.items() if k in c1.key_gates]
-    success = get_success_rate(c1.correct_key, estimated_key)
+
     if details:
+        success = get_success_rate(c1.correct_key, estimated_key)
         print(f'    iterations: {i}')
         print(f'    estimated key: {"".join([str(int(b)) for b in estimated_key])}')
         print(f'    correct key:   {"".join([str(int(b)) for b in c1.correct_key])}')
