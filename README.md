@@ -30,7 +30,8 @@ c = Circuit('circuits/c432.bench')
     - Simulates the functionality of circuit.
   - Example:
 
-```
+```python
+import random
 from circuit import Circuit
 c = Circuit('circuits/c432.bench')
 inp = [random.choice([True, False]) for _ in range(36)]
@@ -42,7 +43,7 @@ out = c.simulate(inp)
     - Writes Circuit to file.
   - Example:
 
-```
+```python
 from circuit import Circuit
 c = Circuit('circuits/c432.bench')
 c.to_file('circuits/c432_2.bench')
@@ -55,8 +56,8 @@ Contains functions making it possible to lock circuit. Main function used for th
   - Description:
     - Finds max_num number of routes of length max_len in circuit and locks them with key via inserting MUX gates into circuit.
   - Example:
-  - 
-```
+
+```python
 import random
 from circuit import Circuit
 from locking_module import lock_circuit
@@ -74,7 +75,7 @@ Contains functions that allow to run SAT attack on locked circuit. Main function
     - Returns the number of iterations of SAT attack and estimated key.
   - Example:
 
-```
+```python
 import random
 from circuit import Circuit
 from locking_module import lock_circuit
@@ -90,11 +91,11 @@ i, est_key = sat_attack(cl, c)
     - Returns percentage of how many bits of keys equivalent.
   - Example:
 
-```
+```python
 import random
 from circuit import Circuit
 from locking_module import lock_circuit
-from attack_module import sat_attack
+from attack_module import sat_attack, get_success_rate
 c = Circuit('circuits/c432.bench')
 key = [random.choice([True, False]) for _ in range(36)]
 cl = lock_circuit(c, 6, 6, key)
